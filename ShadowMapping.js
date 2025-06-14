@@ -1,5 +1,6 @@
-// Shadow mapping functions
 function rayTriangleIntersection(rayOrigin, rayDirection, v0, v1, v2) {
+    if (!rayOrigin || !rayDirection || !v0 || !v1 || !v2) return null;
+    
     const EPSILON = 0.0000001;
     
     const edge1 = vectorSubtract(v1, v0);
@@ -29,7 +30,6 @@ function rayTriangleIntersection(rayOrigin, rayDirection, v0, v1, v2) {
     const t = f * vectorDot(edge2, q);
     
     if (t > EPSILON) {
-        // Ray intersection
         return {
             distance: t,
             point: {
@@ -40,11 +40,12 @@ function rayTriangleIntersection(rayOrigin, rayDirection, v0, v1, v2) {
         };
     }
     
-    return null; // Line intersection but not ray intersection
+    return null;
 }
 
 function isPointInShadow(worldPoint, light, allShapes, excludeShape = null) {
-    // Ray from point to light
+    if (!worldPoint || !light) return false;
+    
     const lightDirection = vectorSubtract(light, worldPoint);
     const lightDistance = Math.sqrt(
         lightDirection.x * lightDirection.x + 
@@ -60,22 +61,23 @@ function isPointInShadow(worldPoint, light, allShapes, excludeShape = null) {
         z: lightDirection.z / lightDistance
     };
     
-    // Start ray slightly above surface to avoid self-intersection
     const rayOrigin = {
         x: worldPoint.x + normalizedLightDir.x * 0.1,
         y: worldPoint.y + normalizedLightDir.y * 0.1,
         z: worldPoint.z + normalizedLightDir.z * 0.1
     };
     
-    // Check intersection with all other shapes
     for (let shape of allShapes) {
         if (shape === excludeShape) continue;
         
-        // Check all triangles of this shape
         for (let triangleIndices of shape.Triangles) {
+            if (!triangleIndices || triangleIndices.length < 3) continue;
+            
             const v0 = shape.Vertices[triangleIndices[0]];
             const v1 = shape.Vertices[triangleIndices[1]];
             const v2 = shape.Vertices[triangleIndices[2]];
+            
+            if (!v0 || !v1 || !v2) continue;
             
             const intersection = rayTriangleIntersection(
                 rayOrigin, 
@@ -84,21 +86,20 @@ function isPointInShadow(worldPoint, light, allShapes, excludeShape = null) {
             );
             
             if (intersection && intersection.distance < lightDistance - 0.1) {
-                return true; // Point is in shadow
+                return true;
             }
         }
     }
     
-    return false; // Point is not in shadow
+    return false;
 }
 
 function calculateShadowIntensity(worldPoint, light, allShapes, excludeShape = null) {
-    const shadowSamples = 4; // Number of shadow samples for softer shadows
-    const lightRadius = 50; // Radius for soft shadows
+    const shadowSamples = 4;
+    const lightRadius = 50;
     let shadowSum = 0;
     
     for (let i = 0; i < shadowSamples; i++) {
-        // Create slightly offset light positions for soft shadows
         const angle1 = (i / shadowSamples) * Math.PI * 2;
         const angle2 = Math.random() * Math.PI * 2;
         const radius = Math.random() * lightRadius;
@@ -114,5 +115,5 @@ function calculateShadowIntensity(worldPoint, light, allShapes, excludeShape = n
         }
     }
     
-    return 1.0 - (shadowSum / shadowSamples); // 1.0 = no shadow, 0.0 = full shadow
+    return 1.0 - (shadowSum / shadowSamples);
 }
