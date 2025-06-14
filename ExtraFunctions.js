@@ -29,8 +29,10 @@ function fillTriangle(v1, v2, v3, normal, worldV1, worldV2, worldV3, light, mate
     context.moveTo(v1.x, v1.y);
     context.lineTo(v2.x, v2.y);
     context.lineTo(v3.x, v3.y);
-    context.fillStyle = `rgb(${finalColor.r}, ${finalColor.g}, ${finalColor.b})`;
     context.closePath();
+    context.fillStyle = `rgb(${finalColor.r}, ${finalColor.g}, ${finalColor.b})`;
+    context.strokeStyle = context.fillStyle;
+    context.stroke();
     context.fill();
 
     context.restore();

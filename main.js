@@ -17,9 +17,9 @@ const center = new Vertex(centerX, centerY, 0);
 const Shapes = []
 
 Shapes[0] = new Cube({x: 200, y: 100, z: 300, w: 200, h: 200, d: 200})
-Shapes[0] = new Cube({x: 400, y: 300, z: 200, w: 400, h: 100, d: 100, name: "other cube"})
+Shapes[1] = new Cube({x: 400, y: 300, z: 200, w: 400, h: 100, d: 100, name: "other cube"})
 
-Shapes[0] = new Sphere({x: 0, y: 0, z: 0, radius: 200, segments: 20})
+Shapes[2] = new Sphere({x: 0, y: 0, z: 0, radius: 100, segments: 30})
 
 for (v of Shapes) {
     v.setUp()
