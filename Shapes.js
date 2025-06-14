@@ -113,6 +113,16 @@ class Sphere {
     }
 }
 
+class Light {
+    constructor({ x, y, z, color = { r: 255, g: 255, b: 255 }, intensity = 1 }) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.color = color;
+        this.intensity = intensity;
+    }
+}
+
 class Camera {
     constructor({ x, y, z }) {
         this.x = x;

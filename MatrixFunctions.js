@@ -36,3 +36,25 @@ function multiplyMatrices(m, v) {
         z: m[2][0] * x + m[2][1] * y + m[2][2] * z
     }
 }
+
+function vectorSubtract(a, b) {
+    return { x: a.x - b.x, y: a.y - b.y, z: a.z - b.z };
+}
+
+function vectorCross(a, b) {
+    return {
+        x: a.y * b.z - a.z * b.y,
+        y: a.z * b.x - a.x * b.z,
+        z: a.x * b.y - a.y * b.x
+    };
+}
+
+function vectorNormalize(v) {
+    const length = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+    if (length === 0) return { x: 0, y: 0, z: 0 };
+    return { x: v.x / length, y: v.y / length, z: v.z / length };
+}
+
+function vectorDot(a, b) {
+    return a.x * b.x + a.y * b.y + a.z * b.z;
+}
