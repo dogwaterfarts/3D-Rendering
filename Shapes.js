@@ -65,7 +65,7 @@ class Cube {
     generateFace(x, y, z, w, h, d, sub) {
         let vertexIndex = 0;
 
-        // Front face (z = -d) - facing negative Z
+        // Front face (z = -d) - facing negative Z (towards camera)
         const frontStart = vertexIndex;
         for (let i = 0; i <= sub; i++) {
             for (let j = 0; j <= sub; j++) {
@@ -76,20 +76,20 @@ class Cube {
                 vertexIndex++;
             }
         }
-        this.generateFaceTriangles(frontStart, sub, false); // Counter-clockwise
+        this.generateFaceTriangles(frontStart, sub, true); // Clockwise for outward normal
 
-        // Back face (z = d) - facing positive Z
+        // Back face (z = d) - facing positive Z (away from camera)
         const backStart = vertexIndex;
         for (let i = 0; i <= sub; i++) {
             for (let j = 0; j <= sub; j++) {
-                const px = w + x - (2 * w * j) / sub; // Reverse X
+                const px = w + x - (2 * w * j) / sub; // Reverse X for proper winding
                 const py = -h + y + (2 * h * i) / sub;
                 const pz = d + z;
                 this.Vertices.push(new Vertex(px, py, pz));
                 vertexIndex++;
             }
         }
-        this.generateFaceTriangles(backStart, sub, false);
+        this.generateFaceTriangles(backStart, sub, true); // Clockwise for outward normal
 
         // Left face (x = -w) - facing negative X
         const leftStart = vertexIndex;
@@ -97,12 +97,12 @@ class Cube {
             for (let j = 0; j <= sub; j++) {
                 const px = -w + x;
                 const py = -h + y + (2 * h * i) / sub;
-                const pz = d + z - (2 * d * j) / sub;
+                const pz = d + z - (2 * d * j) / sub; // Z decreases as j increases
                 this.Vertices.push(new Vertex(px, py, pz));
                 vertexIndex++;
             }
         }
-        this.generateFaceTriangles(leftStart, sub, false);
+        this.generateFaceTriangles(leftStart, sub, true); // Clockwise for outward normal
 
         // Right face (x = w) - facing positive X
         const rightStart = vertexIndex;
@@ -110,12 +110,12 @@ class Cube {
             for (let j = 0; j <= sub; j++) {
                 const px = w + x;
                 const py = -h + y + (2 * h * i) / sub;
-                const pz = -d + z + (2 * d * j) / sub;
+                const pz = -d + z + (2 * d * j) / sub; // Z increases as j increases
                 this.Vertices.push(new Vertex(px, py, pz));
                 vertexIndex++;
             }
         }
-        this.generateFaceTriangles(rightStart, sub, false);
+        this.generateFaceTriangles(rightStart, sub, true); // Clockwise for outward normal
 
         // Bottom face (y = -h) - facing negative Y
         const bottomStart = vertexIndex;
@@ -123,12 +123,12 @@ class Cube {
             for (let j = 0; j <= sub; j++) {
                 const px = -w + x + (2 * w * j) / sub;
                 const py = -h + y;
-                const pz = d + z - (2 * d * i) / sub;
+                const pz = d + z - (2 * d * i) / sub; // Z decreases as i increases
                 this.Vertices.push(new Vertex(px, py, pz));
                 vertexIndex++;
             }
         }
-        this.generateFaceTriangles(bottomStart, sub, true); // Clockwise for bottom
+        this.generateFaceTriangles(bottomStart, sub, true); // Clockwise for outward normal
 
         // Top face (y = h) - facing positive Y
         const topStart = vertexIndex;
@@ -136,12 +136,12 @@ class Cube {
             for (let j = 0; j <= sub; j++) {
                 const px = -w + x + (2 * w * j) / sub;
                 const py = h + y;
-                const pz = -d + z + (2 * d * i) / sub;
+                const pz = -d + z + (2 * d * i) / sub; // Z increases as i increases
                 this.Vertices.push(new Vertex(px, py, pz));
                 vertexIndex++;
             }
         }
-        this.generateFaceTriangles(topStart, sub, false);
+        this.generateFaceTriangles(topStart, sub, true); // Clockwise for outward normal
     }
 
     generateFaceTriangles(startIndex, sub, clockwise = false) {

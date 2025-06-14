@@ -1,4 +1,4 @@
-function fillTriangle(v1, v2, v3, normal, worldV1, worldV2, worldV3, light, materialColor = { r: 100, g: 150, b: 200 }) {
+function fillTriangle(v1, v2, v3, normal, worldV1, worldV2, worldV3, light, materialColor = { r: 100, g: 150, b: 200 }, currentShape = null, allShapes = []) {
     context.save();
 
     // Calculate triangle center in world space
@@ -14,9 +14,19 @@ function fillTriangle(v1, v2, v3, normal, worldV1, worldV2, worldV3, light, mate
     // Calculate lighting intensity using dot product
     let intensity = Math.max(0, vectorDot(normal, lightDir));
     
+    // Calculate shadow intensity
+    let shadowIntensity = 1.0;
+    if (allShapes.length > 1) {
+        shadowIntensity = calculateShadowIntensity(centerWorld, light, allShapes, currentShape);
+    }
+    
     // Add ambient lighting
-    const ambient = 0.2;
+    const ambient = 0.15;
     intensity = Math.min(1, intensity + ambient);
+    
+    // Apply shadow to the lighting (but not to ambient)
+    const directLight = Math.max(0, intensity - ambient);
+    intensity = ambient + (directLight * shadowIntensity);
 
     // Blend light color with white light for subtler effect
     const colorInfluence = 0.3; // Adjust this value (0 = no color influence, 1 = full color influence)
@@ -72,8 +82,8 @@ function isTriangleFacingCamera(p1, p2, p3) {
     // Cross product Z component (for 2D vectors, this is the "winding")
     const crossZ = v1.x * v2.y - v1.y * v2.x;
     
-    // If positive, triangle is counter-clockwise (facing camera)
-    return crossZ < 0;
+    // Changed to > 0 for consistent clockwise winding (outward normals)
+    return crossZ > 0;
 }
 
 function orderByZOrdinate(array) {

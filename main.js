@@ -36,7 +36,7 @@ let light = new Light({
     x: centerX + 200,
     y: centerY - 300,
     z: -100,
-    color: { r: 0, g: 255, b: 0 },
+    color: { r: 255, g: 255, b: 255 }, // Changed to white light for better shadows
     intensity: 1
 });
 
@@ -143,7 +143,7 @@ const engine = () => {
     // STEP 2: Sort shapes by depth (render farthest first)
     shapesWithDepth.sort((a, b) => b.avgDepth - a.avgDepth);
 
-    // STEP 3: Render shapes in depth order
+    // STEP 3: Render shapes in depth order with shadows
     for (let shapeData of shapesWithDepth) {
         const shape = shapeData.shape;
         const triangles = shapeData.triangles;
@@ -157,9 +157,23 @@ const engine = () => {
             // drawLine(p2.x, p2.y, p3.x, p3.y);
             // drawLine(p3.x, p3.y, p1.x, p1.y);
             
-            // Fill triangle with lighting and shape's color
-            fillTriangle(p1, p2, p3, triangle.normal, w1, w2, w3, light, shape.color);
+            // Fill triangle with lighting, shadows, and shape's color
+            fillTriangle(p1, p2, p3, triangle.normal, w1, w2, w3, light, shape.color, shape, Shapes);
         }
+    }
+
+    // Optional: Draw light position indicator
+    const lightProjected = addPerspective({
+        x: light.x - camera.x,
+        y: light.y - camera.y,
+        z: light.z - camera.z
+    }, camera.fov);
+    
+    if (lightProjected && lightProjected.z > 0) {
+        context.fillStyle = 'yellow';
+        context.beginPath();
+        context.arc(lightProjected.x, lightProjected.y, 8, 0, Math.PI * 2);
+        context.fill();
     }
 
     requestAnimationFrame(engine);
