@@ -50,7 +50,6 @@ function addPerspective(point, fov) {
     };
 }
 
-// SOLUTION 2: Back-face culling (don't render faces pointing away from camera)
 function isTriangleFacingCamera(p1, p2, p3) {
     // Calculate screen-space normal using cross product
     const v1 = { x: p2.x - p1.x, y: p2.y - p1.y };
@@ -61,4 +60,28 @@ function isTriangleFacingCamera(p1, p2, p3) {
     
     // If positive, triangle is counter-clockwise (facing camera)
     return crossZ > 0;
+}
+
+function orderByZOrdinate(array) {
+    array.sort((a,b) => {
+        a.z - b.z;
+    })
+}
+
+function CollisionDetection(player, collidableObjects) {
+    for (const obj of collidableObjects) {
+        const plrToObjectVector = {
+            x: Math.abs(player.x - obj.x),
+            y: Math.abs(player.y - obj.y),
+            z: Math.abs(player.z - obj.z)
+        };
+
+        const plrToObjectMagnitude = Math.sqrt(plrToObjectVector.x ** 2 + plrToObjectVector.y ** 2 + plrToObjectVector.z ** 2);
+
+        if (plrToObjectMagnitude <= 100) {
+            return false;
+        }
+
+        return true; 
+    }
 }

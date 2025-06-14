@@ -29,8 +29,9 @@ class Vertex {
 }
 
 class Cube {
-    constructor({x, y, z, h = 100, w = 100, d = 100, name = "cube"}) {
-        this.name = name
+    constructor({x, y, z, h = 100, w = 100, d = 100, name = "cube", color = { r: 100, g: 150, b: 200 }}) {
+        this.name = name;
+        this.color = color; // Add color property
 
         this.x = x;
         this.y = y;
@@ -72,7 +73,10 @@ class Cube {
 }
 
 class Sphere {
-    constructor({x, y, z, radius, segments}) {
+    constructor({x, y, z, radius, segments, name = "sphere", color = { r: 100, g: 150, b: 200 }}) {
+        this.name = name;
+        this.color = color; // Add color property
+        
         this.radius = radius;
         this.segments = segments;
 

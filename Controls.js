@@ -2,6 +2,7 @@ let lastX = 0;
 let lastY = 0;
 
 let canSpin = false
+let canMove = true
 
 document.addEventListener("mousemove", (event) => {
     let deltaX = event.clientX - lastX;
@@ -17,6 +18,7 @@ document.addEventListener("mousemove", (event) => {
 
 document.addEventListener("keydown", function(event) {
     const moveSpeed = 10;
+    canMove = CollisionDetection(camera, Shapes);
     
     switch (event.key) {
         case "w": { // Move forward

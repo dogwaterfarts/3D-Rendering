@@ -28,7 +28,7 @@ const rotXMatrix = (angle) => {
     ];
 }
 
-function multiplyMatrices(m, v) {
+function MatrixTimesVector(m, v) {
     const {x, y, z} = v;
     return {
         x: m[0][0] * x + m[0][1] * y + m[0][2] * z,
