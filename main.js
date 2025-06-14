@@ -17,8 +17,8 @@ const center = new Vertex(centerX, centerY, 0);
 const Shapes = []
 
 // Create multiple objects at different depths for testing
-Shapes[0] = new Cube({x: 200, y: 100, z: 300, w: 200, h: 200, d: 200, name: "back cube"})
-Shapes[1] = new Cube({x: 400, y: 300, z: 200, w: 400, h: 100, d: 100, name: "middle cube"})
+Shapes[0] = new Cube({x: 200, y: 100, z: 300, w: 200, h: 200, d: 200, name: "back cube", subdivisions: 2})
+Shapes[1] = new Cube({x: 400, y: 300, z: 200, w: 400, h: 100, d: 100, name: "middle cube", subdivisions: 5})
 Shapes[2] = new Sphere({x: 0, y: 0, z: 100, radius: 150, segments: 15, name: "front sphere"})
 
 // Give each shape a different color for better visibility
@@ -36,7 +36,7 @@ let light = new Light({
     x: centerX + 200,
     y: centerY - 300,
     z: -100,
-    color: { r: 255, g: 0, b: 0 },
+    color: { r: 0, g: 255, b: 0 },
     intensity: 1
 });
 

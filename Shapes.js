@@ -29,9 +29,10 @@ class Vertex {
 }
 
 class Cube {
-    constructor({x, y, z, h = 100, w = 100, d = 100, name = "cube", color = { r: 100, g: 150, b: 200 }}) {
+    constructor({x, y, z, h = 100, w = 100, d = 100, name = "cube", color = { r: 100, g: 150, b: 200 }, subdivisions = 2}) {
         this.name = name;
-        this.color = color; // Add color property
+        this.color = color;
+        this.subdivisions = subdivisions;
 
         this.x = x;
         this.y = y;
@@ -42,33 +43,126 @@ class Cube {
         this.d = d/2;
 
         this.Vertices = [];
-        this.Triangles = [
-            [0, 1, 2],  [1, 3, 2],
-            [5, 4, 7],  [4, 6, 7],
-            [4, 0, 6],  [0, 2, 6],
-            [1, 5, 3],  [5, 7, 3],
-            [4, 5, 0],  [5, 1, 0],
-            [2, 3, 6],  [3, 7, 6],
-        ];
+        this.Triangles = [];
     }
 
     setUp() {
+        this.Vertices = [];
+        this.Triangles = [];
+        
         const x = this.x;
         const y = this.y;
         const z = this.z;
-
         const w = this.w;
         const h = this.h;
         const d = this.d;
+        const sub = this.subdivisions;
 
-        this.Vertices[0] = new Vertex(-w + x, -h + y, -d + z);
-        this.Vertices[1] = new Vertex(w + x, -h + y, -d + z);
-        this.Vertices[2] = new Vertex(-w + x, h + y, -d + z);
-        this.Vertices[3] = new Vertex(w + x, h + y, -d + z);
-        this.Vertices[4] = new Vertex(-w + x, -h + y, d + z);
-        this.Vertices[5] = new Vertex(w + x, -h + y, d + z);
-        this.Vertices[6] = new Vertex(-w + x, h + y, d + z);
-        this.Vertices[7] = new Vertex(w + x, h + y, d + z);
+        // Generate vertices and triangles for each face
+        this.generateFace(x, y, z, w, h, d, sub);
+    }
+
+    generateFace(x, y, z, w, h, d, sub) {
+        let vertexIndex = 0;
+
+        // Front face (z = -d) - facing negative Z
+        const frontStart = vertexIndex;
+        for (let i = 0; i <= sub; i++) {
+            for (let j = 0; j <= sub; j++) {
+                const px = -w + x + (2 * w * j) / sub;
+                const py = -h + y + (2 * h * i) / sub;
+                const pz = -d + z;
+                this.Vertices.push(new Vertex(px, py, pz));
+                vertexIndex++;
+            }
+        }
+        this.generateFaceTriangles(frontStart, sub, false); // Counter-clockwise
+
+        // Back face (z = d) - facing positive Z
+        const backStart = vertexIndex;
+        for (let i = 0; i <= sub; i++) {
+            for (let j = 0; j <= sub; j++) {
+                const px = w + x - (2 * w * j) / sub; // Reverse X
+                const py = -h + y + (2 * h * i) / sub;
+                const pz = d + z;
+                this.Vertices.push(new Vertex(px, py, pz));
+                vertexIndex++;
+            }
+        }
+        this.generateFaceTriangles(backStart, sub, false);
+
+        // Left face (x = -w) - facing negative X
+        const leftStart = vertexIndex;
+        for (let i = 0; i <= sub; i++) {
+            for (let j = 0; j <= sub; j++) {
+                const px = -w + x;
+                const py = -h + y + (2 * h * i) / sub;
+                const pz = d + z - (2 * d * j) / sub;
+                this.Vertices.push(new Vertex(px, py, pz));
+                vertexIndex++;
+            }
+        }
+        this.generateFaceTriangles(leftStart, sub, false);
+
+        // Right face (x = w) - facing positive X
+        const rightStart = vertexIndex;
+        for (let i = 0; i <= sub; i++) {
+            for (let j = 0; j <= sub; j++) {
+                const px = w + x;
+                const py = -h + y + (2 * h * i) / sub;
+                const pz = -d + z + (2 * d * j) / sub;
+                this.Vertices.push(new Vertex(px, py, pz));
+                vertexIndex++;
+            }
+        }
+        this.generateFaceTriangles(rightStart, sub, false);
+
+        // Bottom face (y = -h) - facing negative Y
+        const bottomStart = vertexIndex;
+        for (let i = 0; i <= sub; i++) {
+            for (let j = 0; j <= sub; j++) {
+                const px = -w + x + (2 * w * j) / sub;
+                const py = -h + y;
+                const pz = d + z - (2 * d * i) / sub;
+                this.Vertices.push(new Vertex(px, py, pz));
+                vertexIndex++;
+            }
+        }
+        this.generateFaceTriangles(bottomStart, sub, true); // Clockwise for bottom
+
+        // Top face (y = h) - facing positive Y
+        const topStart = vertexIndex;
+        for (let i = 0; i <= sub; i++) {
+            for (let j = 0; j <= sub; j++) {
+                const px = -w + x + (2 * w * j) / sub;
+                const py = h + y;
+                const pz = -d + z + (2 * d * i) / sub;
+                this.Vertices.push(new Vertex(px, py, pz));
+                vertexIndex++;
+            }
+        }
+        this.generateFaceTriangles(topStart, sub, false);
+    }
+
+    generateFaceTriangles(startIndex, sub, clockwise = false) {
+        for (let i = 0; i < sub; i++) {
+            for (let j = 0; j < sub; j++) {
+                const topLeft = startIndex + i * (sub + 1) + j;
+                const topRight = topLeft + 1;
+                const bottomLeft = topLeft + (sub + 1);
+                const bottomRight = bottomLeft + 1;
+
+                if (clockwise) {
+                    // Clockwise winding
+                    this.Triangles.push([topLeft, topRight, bottomLeft]);
+                    this.Triangles.push([topRight, bottomRight, bottomLeft]);
+                } else {
+                    // Counter-clockwise winding
+                    this.Triangles.push([topLeft, bottomLeft, topRight]);
+                    this.Triangles.push([topRight, bottomLeft, bottomRight]);
+                }
+            }
+        }
     }
 }
 

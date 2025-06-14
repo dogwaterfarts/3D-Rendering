@@ -18,12 +18,26 @@ function fillTriangle(v1, v2, v3, normal, worldV1, worldV2, worldV3, light, mate
     const ambient = 0.2;
     intensity = Math.min(1, intensity + ambient);
 
-    // Apply lighting to material color
-    const finalColor = {
-        r: Math.floor(materialColor.r * intensity),
-        g: Math.floor(materialColor.g * intensity),
-        b: Math.floor(materialColor.b * intensity)
+    // Blend light color with white light for subtler effect
+    const colorInfluence = 0.3; // Adjust this value (0 = no color influence, 1 = full color influence)
+    
+    const lightColor = {
+        r: (light.color.r / 255) * colorInfluence + (1 - colorInfluence),
+        g: (light.color.g / 255) * colorInfluence + (1 - colorInfluence),
+        b: (light.color.b / 255) * colorInfluence + (1 - colorInfluence)
     };
+
+    // Apply both light intensity and blended light color to material
+    const finalColor = {
+        r: Math.floor(materialColor.r * intensity * lightColor.r * light.intensity),
+        g: Math.floor(materialColor.g * intensity * lightColor.g * light.intensity),
+        b: Math.floor(materialColor.b * intensity * lightColor.b * light.intensity)
+    };
+
+    // Ensure color values stay within valid range
+    finalColor.r = Math.max(0, Math.min(255, finalColor.r));
+    finalColor.g = Math.max(0, Math.min(255, finalColor.g));
+    finalColor.b = Math.max(0, Math.min(255, finalColor.b));
 
     context.beginPath();
     context.moveTo(v1.x, v1.y);
@@ -59,7 +73,7 @@ function isTriangleFacingCamera(p1, p2, p3) {
     const crossZ = v1.x * v2.y - v1.y * v2.x;
     
     // If positive, triangle is counter-clockwise (facing camera)
-    return crossZ > 0;
+    return crossZ < 0;
 }
 
 function orderByZOrdinate(array) {
