@@ -65,8 +65,8 @@ const engine = () => {
                 v.z - camera.z
             );
 
-            let rotated = multiplyMatrices(rotYMatrix(-camera.rotationX), translated);
-            rotated = multiplyMatrices(rotXMatrix(-camera.rotationY), rotated);
+            let rotated = multiplyMatrices(rotYMatrix(camera.rotationX), translated);
+            rotated = multiplyMatrices(rotXMatrix(camera.rotationY), rotated);
             // let rotated = multiplyMatrices(rotZMatrix(angle), translated);
 
             // let movedBack = new Vertex(
