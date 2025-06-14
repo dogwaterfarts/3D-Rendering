@@ -20,25 +20,25 @@ document.addEventListener("keydown", function(event) {
         case "w": {
             camera.y += 10 * Math.sin(camera.rotationY);
             camera.x += 10 * (Math.sin(camera.rotationX) * Math.cos(camera.rotationY));
-            camera.z += 10 * (Math.cos(camera.rotationX) * Math.cos(camera.rotationY));
+            camera.camZ += 10 * (Math.cos(camera.rotationX) * Math.cos(camera.rotationY));
             console.log("monkey");
             break;
         }
         case "s": {
             camera.y -= 10 * Math.sin(camera.rotationY);
             camera.x -= 10 * (Math.sin(camera.rotationX) * Math.cos(camera.rotationY));
-            camera.z -= 10 * (Math.cos(camera.rotationX) * Math.cos(camera.rotationY));
+            camera.camZ -= 10 * (Math.cos(camera.rotationX) * Math.cos(camera.rotationY));
             console.log("monkey");
             break;
         }
         case "d": {
-            camera.x += Math.cos(camera.rotationX);
-            camera.z += -Math.sin(camera.rotationX);
+            camera.x += 10 * Math.cos(camera.rotationX);
+            camera.camZ += 10 * -Math.sin(camera.rotationX);
             break;
         }
         case "a": {
-            camera.x -= Math.cos(camera.rotationX);
-            camera.z -= -Math.sin(camera.rotationX);
+            camera.x -= 10 * Math.cos(camera.rotationX);
+            camera.camZ -= 10 * -Math.sin(camera.rotationX);
             break;
         }
     }

@@ -118,8 +118,8 @@ class Camera {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.camZ = 200;
-        this.fov = 500;
+        this.camZ = 1;
+        this.fov = 800;
         this.rotationX = 0;
         this.rotationY = 0;
     }

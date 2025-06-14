@@ -30,9 +30,9 @@ const camera = new Camera({x: 0, y: 0, z: 0})
 function addPerspective(point, fov, viewerDistance) {
     const z = viewerDistance * point.z;
 
-    if (z <= 1) return null;
+    if (point.z <= 1) return null;
 
-    const scale = fov / z
+    const scale = fov / point.z
 
     return {
         x: point.x * scale + centerX,
@@ -90,17 +90,37 @@ const engine = () => {
 
         orderByZOrdinate(projected)
 
-        for (let t of shape.Triangles) {
+        let trianglesWithDepth = [];
+        
+        for (let i = 0; i < shape.Triangles.length; i++) {
+            const t = shape.Triangles[i];
             const p1 = projected[t[0]];
             const p2 = projected[t[1]];
             const p3 = projected[t[2]];
 
-            if (p1 && p2 && p3) {
-                drawLine(p1.x, p1.y, p2.x, p2.y)
-                drawLine(p2.x, p2.y, p3.x, p3.y)
-                drawLine(p3.x, p3.y, p1.x, p1.y)
-                fillTriangle(p1, p2, p3, 0)
-            }
+            // Skip triangles with vertices behind camera
+            if (!p1 || !p2 || !p3) continue;
+
+            // Calculate average Z depth for this triangle
+            const avgZ = (p1.z + p2.z + p3.z) / 3;
+
+            trianglesWithDepth.push({
+                vertices: [p1, p2, p3],
+                avgZ: avgZ
+            });
+        }
+
+        // Sort triangles by depth (back to front)
+        trianglesWithDepth.sort((a, b) => b.avgZ - a.avgZ);
+
+        // Render sorted triangles
+        for (let triangle of trianglesWithDepth) {
+            const [p1, p2, p3] = triangle.vertices;
+            
+            drawLine(p1.x, p1.y, p2.x, p2.y);
+            drawLine(p2.x, p2.y, p3.x, p3.y);
+            drawLine(p3.x, p3.y, p1.x, p1.y);
+            fillTriangle(p1, p2, p3, 0);
         }
     }
 

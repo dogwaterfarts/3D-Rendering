@@ -17,7 +17,7 @@ function fillTriangle(v1, v2, v3, alpha) {
 function orderByZOrdinate(list) {
     return list.sort((a, b) => {
         if (!a || !b){
-            return;
+            return 0;
         }
         b.z - a.z
     })
