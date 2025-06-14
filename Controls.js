@@ -16,29 +16,37 @@ document.addEventListener("mousemove", (event) => {
 });
 
 document.addEventListener("keydown", function(event) {
+    const moveSpeed = 10;
+    
     switch (event.key) {
-        case "w": {
-            camera.y += 10 * Math.sin(camera.rotationY);
-            camera.x += 10 * (Math.sin(camera.rotationX) * Math.cos(camera.rotationY));
-            camera.camZ += 10 * (Math.cos(camera.rotationX) * Math.cos(camera.rotationY));
-            console.log("monkey");
+        case "w": { // Move forward
+            camera.x += moveSpeed * Math.sin(camera.rotationX) * Math.cos(camera.rotationY);
+            camera.y += moveSpeed * Math.sin(camera.rotationY);
+            camera.z += moveSpeed * Math.cos(camera.rotationX) * Math.cos(camera.rotationY);
             break;
         }
-        case "s": {
-            camera.y -= 10 * Math.sin(camera.rotationY);
-            camera.x -= 10 * (Math.sin(camera.rotationX) * Math.cos(camera.rotationY));
-            camera.camZ -= 10 * (Math.cos(camera.rotationX) * Math.cos(camera.rotationY));
-            console.log("monkey");
+        case "s": { // Move backward
+            camera.x -= moveSpeed * Math.sin(camera.rotationX) * Math.cos(camera.rotationY);
+            camera.y -= moveSpeed * Math.sin(camera.rotationY);
+            camera.z -= moveSpeed * Math.cos(camera.rotationX) * Math.cos(camera.rotationY);
             break;
         }
-        case "d": {
-            camera.x += 10 * Math.cos(camera.rotationX);
-            camera.camZ += 10 * -Math.sin(camera.rotationX);
+        case "d": { // Strafe right
+            camera.x += moveSpeed * Math.cos(camera.rotationX);
+            camera.z -= moveSpeed * Math.sin(camera.rotationX);
             break;
         }
-        case "a": {
-            camera.x -= 10 * Math.cos(camera.rotationX);
-            camera.camZ -= 10 * -Math.sin(camera.rotationX);
+        case "a": { // Strafe left
+            camera.x -= moveSpeed * Math.cos(camera.rotationX);
+            camera.z += moveSpeed * Math.sin(camera.rotationX);
+            break;
+        }
+        case "q": { // Move up
+            camera.y -= moveSpeed;
+            break;
+        }
+        case "e": { // Move down
+            camera.y += moveSpeed;
             break;
         }
     }

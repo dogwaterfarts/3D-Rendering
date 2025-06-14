@@ -13,12 +13,3 @@ function fillTriangle(v1, v2, v3, alpha) {
 
     context.restore();
 }
-
-function orderByZOrdinate(list) {
-    return list.sort((a, b) => {
-        if (!a || !b){
-            return 0;
-        }
-        b.z - a.z
-    })
-}
