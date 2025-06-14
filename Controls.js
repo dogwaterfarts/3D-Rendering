@@ -22,23 +22,23 @@ document.addEventListener("keydown", function(event) {
         case "w": { // Move forward
             camera.x += moveSpeed * Math.sin(camera.rotationX) * Math.cos(camera.rotationY);
             camera.y += moveSpeed * Math.sin(camera.rotationY);
-            camera.camZ += moveSpeed * Math.cos(camera.rotationX) * Math.cos(camera.rotationY);
+            camera.z += moveSpeed * Math.cos(camera.rotationX) * Math.cos(camera.rotationY);
             break;
         }
         case "s": { // Move backward
             camera.x -= moveSpeed * Math.sin(camera.rotationX) * Math.cos(camera.rotationY);
             camera.y -= moveSpeed * Math.sin(camera.rotationY);
-            camera.camZ -= moveSpeed * Math.cos(camera.rotationX) * Math.cos(camera.rotationY);
+            camera.z -= moveSpeed * Math.cos(camera.rotationX) * Math.cos(camera.rotationY);
             break;
         }
         case "d": { // Strafe right
             camera.x += moveSpeed * Math.cos(camera.rotationX);
-            camera.camZ -= moveSpeed * Math.sin(camera.rotationX);
+            camera.z -= moveSpeed * Math.sin(camera.rotationX);
             break;
         }
         case "a": { // Strafe left
             camera.x -= moveSpeed * Math.cos(camera.rotationX);
-            camera.camZ += moveSpeed * Math.sin(camera.rotationX);
+            camera.z += moveSpeed * Math.sin(camera.rotationX);
             break;
         }
         case "q": { // Move up

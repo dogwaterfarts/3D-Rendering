@@ -35,3 +35,28 @@ function fillTriangle(v1, v2, v3, normal, worldV1, worldV2, worldV3, light, mate
 
     context.restore();
 }
+
+function addPerspective(point, fov) {
+    if (point.z <= 0) return null;
+
+    const scale = fov / point.z;
+    
+    return {
+        x: point.x * scale + centerX,
+        y: point.y * scale + centerY,
+        z: point.z
+    };
+}
+
+// SOLUTION 2: Back-face culling (don't render faces pointing away from camera)
+function isTriangleFacingCamera(p1, p2, p3) {
+    // Calculate screen-space normal using cross product
+    const v1 = { x: p2.x - p1.x, y: p2.y - p1.y };
+    const v2 = { x: p3.x - p1.x, y: p3.y - p1.y };
+    
+    // Cross product Z component (for 2D vectors, this is the "winding")
+    const crossZ = v1.x * v2.y - v1.y * v2.x;
+    
+    // If positive, triangle is counter-clockwise (facing camera)
+    return crossZ > 0;
+}

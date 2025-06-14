@@ -16,8 +16,8 @@ const center = new Vertex(centerX, centerY, 0);
 
 const Shapes = []
 
-// Shapes[0] = new Cube({x: centerX - 200, y: centerY - 200, z: 100, w: 200, h: 200, d: 200})
-// Shapes[0] = new Cube({x: 0, y: 0, z: 0, w: 400, h: 100, d: 100, name: "other cube"})
+Shapes[0] = new Cube({x: 200, y: 100, z: 300, w: 200, h: 200, d: 200})
+Shapes[0] = new Cube({x: 400, y: 300, z: 200, w: 400, h: 100, d: 100, name: "other cube"})
 
 Shapes[0] = new Sphere({x: 0, y: 0, z: 0, radius: 200, segments: 20})
 
@@ -34,18 +34,6 @@ let light = new Light({
     color: { r: 255, g: 255, b: 255 },
     intensity: 1
 });
-
-function addPerspective(point, fov) {
-    if (point.z <= 0) return null;
-
-    const scale = fov / point.z;
-    
-    return {
-        x: point.x * scale + centerX,
-        y: point.y * scale + centerY,
-        z: point.z
-    };
-}
 
 let time = 0
 let lightMovement = true;
@@ -86,8 +74,8 @@ let lightMovement = true;
                 continue;
             }
 
-            projected2D.x -= camera.x;
-            projected2D.y -= camera.y;
+            // projected2D.x -= camera.x;
+            // projected2D.y -= camera.y;
             projected2D.z = rotated.z;
 
             projected.push(projected2D);
@@ -108,19 +96,29 @@ let lightMovement = true;
 
             if (!p1 || !p2 || !p3 || !w1 || !w2 || !w3) continue;
 
-            // Calculate surface normal in world space
+            // // Calculate surface normal in world space
             const edge1 = vectorSubtract(w2, w1);
             const edge2 = vectorSubtract(w3, w1);
             const normal = vectorNormalize(vectorCross(edge1, edge2));
 
             const avgZ = (p1.z + p2.z + p3.z) / 3;
 
-            trianglesWithDepth.push({
-                vertices: [p1, p2, p3],
-                worldVertices: [w1, w2, w3],
-                normal: normal,
-                avgZ: avgZ
-            });
+            // trianglesWithDepth.push({
+            //     vertices: [p1, p2, p3],
+            //     worldVertices: [w1, w2, w3],
+            //     normal: normal,
+            //     avgZ: avgZ
+            // });
+
+            // SOLUTION 2: Back-face culling (don't render faces pointing away from camera)
+            if (isTriangleFacingCamera(p1, p2, p3)) {
+                trianglesWithDepth.push({
+                    vertices: [p1, p2, p3],
+                    worldVertices: [w1, w2, w3],
+                    normal: normal,
+                    avgZ: avgZ
+                })
+            }
         }
 
         trianglesWithDepth.sort((a, b) => b.avgZ - a.avgZ);
