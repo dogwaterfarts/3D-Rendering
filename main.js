@@ -38,6 +38,8 @@ let time = 0;
 let lightMovement = true;
 
 const engine = () => {
+    updateMovement();
+
     context.clearRect(0, 0, canvasWidth, canvasHeight);
     context.fillStyle = '#1a1a1a';
     context.fillRect(0, 0, canvasWidth, canvasHeight);
