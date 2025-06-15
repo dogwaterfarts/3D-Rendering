@@ -37,6 +37,125 @@ let light = new Light({
 let time = 0;
 let lightMovement = true;
 
+// Text rendering functions
+function render3DText(worldPos, text, camera, options = {}) {
+    const opts = {
+        fontSize: options.fontSize || 16,
+        font: options.font || 'Arial',
+        color: options.color || '#ffffff',
+        backgroundColor: options.backgroundColor || null,
+        padding: options.padding || 4,
+        fixedSize: options.fixedSize || true,
+        maxDistance: options.maxDistance || 2000,
+        ...options
+    };
+
+    const translated = {
+        x: worldPos.x - camera.x,
+        y: worldPos.y - camera.y,
+        z: worldPos.z - camera.z
+    };
+
+    let rotated = MatrixTimesVector(rotYMatrix(-camera.rotationX), translated);
+    rotated = MatrixTimesVector(rotXMatrix(camera.rotationY), rotated);
+
+    if (rotated.z <= 0 || rotated.z > opts.maxDistance) {
+        return;
+    }
+
+    const projected = addPerspective(rotated, camera.fov);
+    if (!projected) return;
+
+    let scale = 1;
+    if (!opts.fixedSize) {
+        scale = Math.max(0.1, Math.min(2, camera.fov / rotated.z * 0.5));
+    }
+
+    const finalFontSize = Math.floor(opts.fontSize * scale);
+    
+    context.save();
+    
+    context.font = `${finalFontSize}px ${opts.font}`;
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    
+    const textMetrics = context.measureText(text);
+    const textWidth = textMetrics.width;
+    const textHeight = finalFontSize;
+    
+    if (opts.backgroundColor) {
+        context.fillStyle = opts.backgroundColor;
+        const bgX = projected.x - textWidth / 2 - opts.padding;
+        const bgY = projected.y - textHeight / 2 - opts.padding;
+        const bgWidth = textWidth + opts.padding * 2;
+        const bgHeight = textHeight + opts.padding * 2;
+        
+        context.fillRect(bgX, bgY, bgWidth, bgHeight);
+    }
+    
+    context.fillStyle = opts.color;
+    context.fillText(text, projected.x, projected.y);
+    
+    context.restore();
+}
+
+function renderFloatingText(shape, text, camera, options = {}) {
+    const floatHeight = options.floatHeight || 100;
+    const textPos = {
+        x: shape.x,
+        y: shape.y - floatHeight,
+        z: shape.z
+    };
+    
+    render3DText(textPos, text, camera, options);
+}
+
+function renderUIText(x, y, text, options = {}) {
+    const opts = {
+        fontSize: options.fontSize || 16,
+        font: options.font || 'Arial',
+        color: options.color || '#ffffff',
+        backgroundColor: options.backgroundColor || null,
+        padding: options.padding || 4,
+        align: options.align || 'left',
+        baseline: options.baseline || 'top',
+        ...options
+    };
+
+    context.save();
+    
+    context.font = `${opts.fontSize}px ${opts.font}`;
+    context.textAlign = opts.align;
+    context.textBaseline = opts.baseline;
+    
+    if (opts.backgroundColor) {
+        const textMetrics = context.measureText(text);
+        const textWidth = textMetrics.width;
+        const textHeight = opts.fontSize;
+        
+        let bgX = x;
+        if (opts.align === 'center') bgX -= textWidth / 2;
+        else if (opts.align === 'right') bgX -= textWidth;
+        
+        let bgY = y;
+        if (opts.baseline === 'middle') bgY -= textHeight / 2;
+        else if (opts.baseline === 'bottom') bgY -= textHeight;
+        
+        context.fillStyle = opts.backgroundColor;
+        context.fillRect(
+            bgX - opts.padding, 
+            bgY - opts.padding, 
+            textWidth + opts.padding * 2, 
+            textHeight + opts.padding * 2
+        );
+    }
+    
+    context.fillStyle = opts.color;
+    context.fillText(text, x, y);
+    
+    context.restore();
+}
+
 const engine = () => {
     updateMovement();
 
@@ -141,6 +260,7 @@ const engine = () => {
         }
     }
 
+    // Render the light
     const lightTransformed = {
         x: light.x - camera.x,
         y: light.y - camera.y,
@@ -158,6 +278,60 @@ const engine = () => {
         context.arc(lightProjected.x, lightProjected.y, 8, 0, Math.PI * 2);
         context.fill();
     }
+
+    // Render 3D text labels for each shape
+    renderFloatingText(Shapes[0], "Back Cube", camera, {
+        fontSize: 20,
+        color: '#ff6666',
+        backgroundColor: 'rgba(0,0,0,0.7)',
+        fixedSize: true,
+        floatHeight: 120
+    });
+
+    renderFloatingText(Shapes[1], "Middle Cube", camera, {
+        fontSize: 20,
+        color: '#66ff66',
+        backgroundColor: 'rgba(0,0,0,0.7)',
+        fixedSize: true,
+        floatHeight: 80
+    });
+
+    renderFloatingText(Shapes[2], "Front Sphere", camera, {
+        fontSize: 20,
+        color: '#6666ff',
+        backgroundColor: 'rgba(0,0,0,0.7)',
+        fixedSize: true,
+        floatHeight: 180
+    });
+
+    // Render UI text
+    renderUIText(10, 10, "3D Text Rendering Demo", {
+        fontSize: 20,
+        color: '#ffffff',
+        backgroundColor: 'rgba(0,0,0,0.8)',
+        padding: 8
+    });
+
+    renderUIText(10, 45, `Camera: (${Math.floor(camera.x)}, ${Math.floor(camera.y)}, ${Math.floor(camera.z)})`, {
+        fontSize: 20,
+        color: '#cccccc',
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        padding: 4
+    });
+
+    renderUIText(10, 70, `Light: (${Math.floor(light.x)}, ${Math.floor(light.y)}, ${Math.floor(light.z)})`, {
+        fontSize: 20,
+        color: '#ffff66',
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        padding: 4
+    });
+
+    renderUIText(10, canvasHeight - 25, "Use WASD to move, Mouse to look around", {
+        fontSize: 20,
+        color: '#aaaaaa',
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        padding: 4
+    });
 
     requestAnimationFrame(engine);
 }

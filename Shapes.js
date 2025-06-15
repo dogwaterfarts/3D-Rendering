@@ -186,6 +186,114 @@ class Sphere {
     }
 }
 
+class Text {
+    constructor({
+        text = "Sample Text",
+        cube = null, // Reference to the cube object
+        face = "front", // "front", "back", "left", "right", "top", "bottom"
+        fontSize = 20,
+        fontFamily = "Arial",
+        color = { r: 255, g: 255, b: 255 },
+        offsetX = 0, // Offset from center of face
+        offsetY = 0,
+        alignment = "center" // "left", "center", "right"
+    }) {
+        this.text = text;
+        this.cube = cube;
+        this.face = face;
+        this.fontSize = fontSize;
+        this.fontFamily = fontFamily;
+        this.color = color;
+        this.offsetX = offsetX;
+        this.offsetY = offsetY;
+        this.alignment = alignment;
+        this.isVisible = true;
+    }
+
+    // Get the center point and normal of the specified face
+    getFaceData() {
+        if (!this.cube) return null;
+
+        const { x, y, z, w, h, d } = this.cube;
+        let center, normal, uVector, vVector;
+
+        switch (this.face) {
+            case "front":
+                center = { x: x, y: y, z: z - d };
+                normal = { x: 0, y: 0, z: -1 };
+                uVector = { x: 1, y: 0, z: 0 }; // Right direction
+                vVector = { x: 0, y: 1, z: 0 }; // Up direction
+                break;
+            case "back":
+                center = { x: x, y: y, z: z + d };
+                normal = { x: 0, y: 0, z: 1 };
+                uVector = { x: -1, y: 0, z: 0 };
+                vVector = { x: 0, y: 1, z: 0 };
+                break;
+            case "left":
+                center = { x: x - w, y: y, z: z };
+                normal = { x: -1, y: 0, z: 0 };
+                uVector = { x: 0, y: 0, z: 1 };
+                vVector = { x: 0, y: 1, z: 0 };
+                break;
+            case "right":
+                center = { x: x + w, y: y, z: z };
+                normal = { x: 1, y: 0, z: 0 };
+                uVector = { x: 0, y: 0, z: -1 };
+                vVector = { x: 0, y: 1, z: 0 };
+                break;
+            case "top":
+                center = { x: x, y: y + h, z: z };
+                normal = { x: 0, y: 1, z: 0 };
+                uVector = { x: 1, y: 0, z: 0 };
+                vVector = { x: 0, y: 0, z: 1 };
+                break;
+            case "bottom":
+                center = { x: x, y: y - h, z: z };
+                normal = { x: 0, y: -1, z: 0 };
+                uVector = { x: 1, y: 0, z: 0 };
+                vVector = { x: 0, y: 0, z: -1 };
+                break;
+            default:
+                return null;
+        }
+
+        return { center, normal, uVector, vVector };
+    }
+
+    // Check if the text face is visible to the camera
+    isFaceVisible(camera) {
+        const faceData = this.getFaceData();
+        if (!faceData) return false;
+
+        const { center, normal } = faceData;
+        
+        // Vector from face center to camera
+        const toCamera = vectorSubtract(
+            { x: camera.x, y: camera.y, z: camera.z },
+            center
+        );
+        
+        // If dot product is positive, face is visible
+        return vectorDot(vectorNormalize(toCamera), normal) > 0;
+    }
+
+    // Get the 3D position where text should be rendered
+    getTextPosition() {
+        const faceData = this.getFaceData();
+        if (!faceData) return null;
+
+        const { center, uVector, vVector } = faceData;
+
+        // Apply offsets
+        return {
+            x: center.x + (uVector.x * this.offsetX) + (vVector.x * this.offsetY),
+            y: center.y + (uVector.y * this.offsetX) + (vVector.y * this.offsetY),
+            z: center.z + (uVector.z * this.offsetX) + (vVector.z * this.offsetY)
+        };
+    }
+}
+
 class Light {
     constructor({ x, y, z, color = { r: 255, g: 255, b: 255 }, intensity = 1 }) {
         this.x = x;
