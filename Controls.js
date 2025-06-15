@@ -51,6 +51,9 @@ document.addEventListener("keydown", function(event) {
             camera.y += moveSpeed;
             break;
         }
+        case "l":
+            lightMovement = !lightMovement;
+            break;
     }
 })
 

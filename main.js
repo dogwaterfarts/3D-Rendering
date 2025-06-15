@@ -28,8 +28,8 @@ const camera = new Camera({x: 0, y: 0, z: -500});
 
 let light = new Light({
     x: centerX + 200,
-    y: centerY - 300,
-    z: -100,
+    y: centerY + 300,
+    z: 100,
     color: { r: 255, g: 255, b: 255 },
     intensity: 1
 });
